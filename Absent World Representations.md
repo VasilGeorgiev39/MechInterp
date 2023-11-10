@@ -199,7 +199,7 @@ Bishop at A6 suppresses the probabilities for the black king to move to B5 and C
 
 ![Log probs](visualisations/images/example2_3.png)
 
-Bishop at D4 suppresses the probabilities for the black king to move to A6 and B5
+Bishop at D3 suppresses the probabilities for the black king to move to A6 and B5
 
 ![Log probs](visualisations/images/example2_4.png)
 
