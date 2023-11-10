@@ -178,7 +178,9 @@ It seems the model is considering mostly legal moves but that is not yet an evid
 
 Next I generated the log probabilities for all positions in that game.
 
-[check the html version of this document]
+You can find them [here](https://github.com/VasilGeorgiev39/MechInterp/tree/main/visualisations/game_log_probs)
+
+[https://github.com/VasilGeorgiev39/MechInterp/blob/main/Absent%20World%20Representations.html](The HTML version of this doc has a nice script that lets you browse the log probabilities for each move but it is very heavy to load)
 
 Few observations:
 
