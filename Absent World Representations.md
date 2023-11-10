@@ -171,7 +171,7 @@ Let's take a particular move for example and see what is going on. I generated t
 
 
 
-![Log probs](https://i.ibb.co/mS8kRP5/example1-B.png)
+![Log probs](visualisations/images/example1-B.png)
 
 
 It seems the model is considering mostly legal moves but that is not yet an evidence that it actually understands the game, it is very plausible that it has figured out that "Ba6" can sometimes be followed by "Be2" but never by "Bg4"
