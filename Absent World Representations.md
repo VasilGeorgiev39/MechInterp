@@ -6,18 +6,18 @@
 ## Intro
 
 ### Choosing a model
-When I began this project, my first dilemma was deciding which model to work on. I could have chosen a pre-trained model and built upon existing work, which would have provided a head start and seemed like the safer option. However, I chose to train my own model. The main reason was that it seemed like a great learning experience as I haven't trained a model before, and even though this increased the risk of the whole project failing, I was very motivated to give it a try.
+When I began this project, my first choice was deciding which model to work on. I could have chosen a pre-trained model and built upon existing work, which would have provided a head start and seemed like the safer option. However, I chose to train my own model. The main reason was that it seemed like a great learning experience as I haven't trained a model before, and even though this increased the risk of the whole project failing, I was very motivated to give it a try.
 
 ### Choosing a problem
-I am a huge chess fan, and for a while, I had the idea to train a model to play chess and try to understand what game abstractions it builds. It was inspired by the [Emergent World Representations: Exploring a Sequence Model Trained on a Synthetic Task](https://arxiv.org/abs/2210.13382) (Li et al., 2023) and [Emergent Linear Representations in World Models of Self-Supervised Sequence Models](https://arxiv.org/abs/2309.00941) (Nanda et al., 2023) papers, which showed substantial evidence that models do indeed build game board representations. I had to also consider the fact that that pursuing work closely resembling existing research might be less impactful than exploring a novel direction. However, for this particular project, I wanted to focus on learning and having fun while experimenting with a significant chance of failure and this problem seemed like a very fun thing to work on. I also thought it was unlikely that I would find something groundbreaking on my first try but I thought that if I were find emergent world representations in a chess model I think that would still hold some value. In any case, this seemed like a good project to take risks with as it was time limited. For a 'real world' research I would probably choose to work on something more promising.
+I am a huge chess fan, and for a while, I had the idea to train a model to play chess and try to understand what game abstractions it builds. It was inspired by the [Emergent World Representations: Exploring a Sequence Model Trained on a Synthetic Task](https://arxiv.org/abs/2210.13382) (Li et al., 2023) and [Emergent Linear Representations in World Models of Self-Supervised Sequence Models](https://arxiv.org/abs/2309.00941) (Nanda et al., 2023) papers, which showed substantial evidence that models do indeed build game board representations. I had to also consider the fact that pursuing work closely resembling existing research might be less impactful than exploring a novel direction. However, for this particular project, I wanted to focus on learning and having fun while experimenting with a significant chance of failure and this problem seemed like a very fun thing to work on. I also thought it was unlikely that I would find something groundbreaking on my first try but I thought that if I were to find emergent world representations in a chess model I think that would still hold some value. In any case, this seemed like a good project to take risks with as it was time limited. For a 'real world' research I would probably choose to work on something more promising.
 
 ### Opening move
 The convergence of my decision to train a model from scratch and the aspiration to train it in chess neatly led to the idea to train a model on executing a checkmate using only a knight and a bishop. [The knight and bishop checkmate](https://en.wikipedia.org/wiki/Bishop_and_knight_checkmate) is one of the four basic endgame checkmates but it is deceptively complicated (**even [grandmasters have failed](https://en.wikipedia.org/wiki/Bishop_and_knight_checkmate#Grandmasters_failing_to_mate) to execute it!**). With perfect play, the strong side can force a checkmate in at most 33 moves from any position. The algorithm that needs to be learned involves creating "barriers" with the bishop and knight to drive the opposing king to the edge of the board and then force it into a corner with the same color as the bishop for the checkmate.
 
 ![Knight and bishop strategy](visualisations/images/barrier.png)
 
-Some napkin calculations show that there are 32 ♗ x  63  ♔ x 62  ♘ x 50♚(estimate) x 2(sides) = **15.5 million possible legal positions**
-However the number of possible move sequences is vastly greater, if we consider the [50-move rule](https://en.wikipedia.org/wiki/Fifty-move_rule) and assume that there are 4 possible moves for position, for 50 moves we would have at most **4^100 possible legal move sequences** (surely less as this does not take into account early terminations due to checkmate/stalemate but as the terminal positions are a tiny fraction of all possible positions I have omitted that). My hypothesis is that in order to be able to produce legal move sequences the model will have to build some representation of the game rather than trying to find patters in the sequence.
+Some napkin calculations show that there are 32 ♗ x  63  ♔ x 62  ♘ x 50♚(estimate) x 2(sides) = **15.5 million possible legal positions** 
+However the number of possible move sequences is vastly greater, if we consider the [50-move rule](https://en.wikipedia.org/wiki/Fifty-move_rule) and assume that there are 4 possible moves for position, for 50 moves we would have at most **4^100 possible legal move sequences** (surely less as this does not take into account early terminations due to checkmate/stalemate but as the terminal positions are a tiny fraction of all possible positions I have omitted that). My hypothesis is that in order to be able to produce legal move sequences the model will have to build some representation of the game rather than memorize move sequences.
 
 ## Hypotheses
 
@@ -34,7 +34,7 @@ Starting the project I was expecting to see the following things
   - In theory this can be derived from the previous two (check if the positions of my pieces fall on a possible move by the opponent) but as moving pieces away from danger is such an important part of the algorithm I would expect to see it clearly
 - The model will have an induction head to retrieve the last position of each piece. Ideally there will be separate heads for the different pieces which will help me see them clearly but probably it will be a multi-semantic one that will do a bunch of stuff altogether.
 
-<sub>Spoiler alert: I did not find evidence for most of those as you can guess from the title</sub>
+<sub>Spoiler alert: I did not find strong evidence for most of those as you can guess from the title</sub>
 
 ## Model
 
@@ -56,7 +56,7 @@ This was the first time I was training a model (I'm using this excuse a lot) so 
 
 - I wanted the model to be small enough that I can train it on my home computer
 - I was worried that a model that is too big would start to memorize and would not be pressured to generalize
-- Basically trying to do what the Othello model did so I kept the activation function and normalization type the same
+- Mainly inspired by what the Othello model did, I kept the activation function and normalization type the same
 - I decided that each game can be at most 50 moves long (because of the [50-move rule](https://en.wikipedia.org/wiki/Fifty-move_rule)) so the context length was set to 100. In the dataset I generated the longest game was 77 moves so that could have been lowered
 - The vocab was all the possible moves one can make (that appeared in the dataset that I generated) in the [Standard algebraic notation](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) (eg. 'Bc4') I decided that is better than to create a tuple of all possible squares (eg 'f1c4') because a) now the dictionary is smaller b) I can make a distinction between the different moves (a King moving from d3 to c4 would be a different move than a Bishop moving from d3 to c4) c) I can query and see relationships between the moves for the different pieces (which is the most likely bishop move?)
 
@@ -68,7 +68,7 @@ The code for the model is on [github](https://github.com/VasilGeorgiev39/MechInt
 
 As this is a sequential model, I cannot just feed it an already set position that is tokenized as the sequence of tokens would not have much meaning. Instead, I decided to feed in the position as a sequence of moves from a set start position, similar to the Othello model. I understand that this is not the best model for the task but my goal was not to create the best bishop-and-knight-checkmating model and based on the Othello paper I was expecting this model to be able to do a reasonably good job using this format.
 
-Because the games would be of different length I decided to pad them with an empty symbol so that I can create batches that are always with the context length. Before the first move I have also added a '\<BOS\>' token.
+Because the games would be of different lengths I decided to pad them with an empty symbol so that I can create batches that are always with the context length. Before the first move I have also added a '\<BOS\>' token.
 
 I decided to create a separate example for each move in each game. I did this in order to vastly increase the number of entries in the data set. However, in retrospect I consider it to be a mistake as this trains the model disproportionally on the first moves, which also turn out not to be good (the first 10 moves are generated at random, see 'Generating the dataset').
 
@@ -82,7 +82,7 @@ Naturally, my aim was to generate a dataset encompassing a wide array of positio
 
 ### Generating the dataset
 
-Thankfully people have already [precomputed](https://github.com/syzygy1/tb) all chess endings with 7 or less prieces and there is even a [python interface for it](https://python-chess.readthedocs.io/en/latest/syzygy.html). The format of the engame database is that for every position you get a [Win-Draw-Loss evaluation](https://lczero.org/blog/2020/04/wdl-head/) (not interesting in this case as white is always winning) and a [Depth-to-zeroing](https://en.wikipedia.org/wiki/Endgame_tablebase#Generating_tablebases) (DTZ) which in this case would be Depth-to-mate. I made a script that for a given position samples all possible moves and chooses the one that minimizes the DTZ (or maximize it for black)
+Thankfully people have already [precomputed](https://github.com/syzygy1/tb) all chess endings with 7 or less prieces and there is even a [python interface for it](https://python-chess.readthedocs.io/en/latest/syzygy.html). The format of the endgame database is that for every position you get a [Win-Draw-Loss evaluation](https://lczero.org/blog/2020/04/wdl-head/) (not interesting in this case as white is always winning) and a [Depth-to-zeroing](https://en.wikipedia.org/wiki/Endgame_tablebase#Generating_tablebases) (DTZ) which in this case would be Depth-to-mate. I made a script that for a given position samples all possible moves and chooses the one that minimizes the DTZ (or maximize it for black)
 
 To generate a large set of positions I generated the **first 10 moves at random**.
 
@@ -145,7 +145,7 @@ The model was able to produce a **legal move** in **99%** of the cases
 The model was able to produce a **checkmate** in **72%** of the games **vs random defense** and **69% vs optimal defense**
 
 After playing few games with the model I noticed that the model has well learned the algorithm and was methodically cornering my king into the white corner. The first few moves seemed sub-optimal but once my king was forced on the edge of the board it seemed that the model was producing optimal moves.
-Something that I found interesting was that *it seemed that the model was able to detect when its pieces were in danger* and always moved them out of the way. I was not able to capture its piece a single time.
+Something that I found interesting was that *it seemed that the model was able to detect when its pieces were in danger*  and always moved them out of the way. I was not able to capture its piece a single time.
 
 The code I used for sampling is [here](https://github.com/VasilGeorgiev39/MechInterp/blob/main/sampler.py)
 
@@ -186,8 +186,8 @@ Few observations:
 
 - It seems that the model well understands whose turn it is and suppresses the probabilities of the opponent's moves
 - The model considers mostly legal moves and usually has only 1 or 2 with very high probability. It would be interesting to figure out at which point the filtering of the illegal moves happens
-- When predicting the black king's moves it correctly supresses the probabilities of squares that are attacked by the bishop. It would be interesting to check if it has learned it because 'Kb5' never follows a 'Be2' or because it understands that 'b5' is a place that can be occupied by both the king and the bishop. One way to test this would be to put the Bishop on e2 but block it's way with something, like Nd3 and see if the model will correctly figure out that the b5 square is now available
-- When the bishop is under attack it's probabilities seem to be boosted and the other pieces' seem to be suppressed (with one notable exception on Move 10). It would be interesting to explore how that happens
+- When predicting the black king's moves it correctly suppresses the probabilities of squares that are attacked by the bishop. It would be interesting to check if it has learned it because 'Kb5' never follows a 'Be2' or because it understands that 'b5' is a place that can be occupied by both the king and the bishop. One way to test this would be to put the Bishop on e2 but block it's way with something, like Nd3 and see if the model will correctly figure out that the b5 square is now available
+- When the bishop is under attack its probabilities seem to be boosted and the other pieces' seem to be suppressed (with one notable exception on Move 10). It would be interesting to explore how that happens
 
 Here are some particular examples:
 
@@ -230,8 +230,8 @@ Then I calculated the residual directions for the correct and incorrect predicti
 
 ### Accumulated residual stream
 
-I used that on the accumulated residual stream to see how the model performs until each layer.
- ![Residual stream](visualisations/images/residual_stream.png)
+I used that on the accumulated residual stream to see at which stages of the resibual stream the logit diff direction is present.
+![Residual stream](visualisations/images/residual_stream.png)
 
 This seems off but I can't find my mistake :( Or I should have compared the 'best' move against multiple others?
 
