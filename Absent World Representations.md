@@ -299,6 +299,6 @@ Visualizing attention patterns showed that heads L2H2 and L3H3 are likely induct
 
 Using activation patching showed that the calculation if a move is legal or not happens mostly in the second MLP layer.
 
-In conclusion I don't think I have found strong evidence for emerging world representations in this model, but I think this is mainly to the limited time spent on the project and my failure to train a linear probe. I think that further work is likely to uncover such representations.
+In conclusion I don't think I have found strong evidence for emerging world representations in this model, but I think this is mainly to the limited time spent on the project and my failure to train a linear probe. However, the experimental setup is ready and I have a clear vision of how to train the linear probe. This will be the next thing to try when given more time and I think that further work is likely to uncover such representations.
 
 
