@@ -14,7 +14,7 @@ I am a huge chess fan, and for a while, I had the idea to train a model to play 
 ### Opening move
 The convergence of my decision to train a model from scratch and the aspiration to train it in chess neatly led to the idea to train a model on executing a checkmate using only a knight and a bishop. [The knight and bishop checkmate](https://en.wikipedia.org/wiki/Bishop_and_knight_checkmate) is one of the four basic endgame checkmates but it is deceptively complicated (**even [grandmasters have failed](https://en.wikipedia.org/wiki/Bishop_and_knight_checkmate#Grandmasters_failing_to_mate) to execute it!**). With perfect play, the strong side can force a checkmate in at most 33 moves from any position. The algorithm that needs to be learned involves creating "barriers" with the bishop and knight to drive the opposing king to the edge of the board and then force it into a corner with the same color as the bishop for the checkmate.
 
-![Knight and bishop strategy](visualisations\images\barrier.png)
+![Knight and bishop strategy](visualisations/images/barrier.png)
 
 Some napkin calculations show that there are 32 ♗ x  63  ♔ x 62  ♘ x 50♚(estimate) x 2(sides) = **15.5 million possible legal positions**
 However the number of possible move sequences is vastly greater, if we consider the [50-move rule](https://en.wikipedia.org/wiki/Fifty-move_rule) and assume that there are 4 possible moves for position, for 50 moves we would have at most **4^100 possible legal move sequences** (surely less as this does not take into account early terminations due to checkmate/stalemate but as the terminal positions are a tiny fraction of all possible positions I have omitted that). My hypothesis is that in order to be able to produce legal move sequences the model will have to build some representation of the game rather than trying to find patters in the sequence.
@@ -76,7 +76,7 @@ I decided to create a separate example for each move in each game. I did this in
 
 I decided on the following starting position:
 
-![Starting position](visualisations\images\starting_position.gif)
+![Starting position](visualisations/images/starting_position.gif)
 
 Naturally, my aim was to generate a dataset encompassing a wide array of positions. Given the general strategy of the white pieces to herd the black king into a white corner, I tried to give the black king as much freedom as possible, which I hoped would lead to a more diverse set of positions. I thought that stuffing the white pieces in a white corner while leaving the black corners empty would help for that.
 
@@ -110,7 +110,7 @@ Least common moves: [('Kb7', 1), ('Ka3', 2), ('Kh8', 4), ('Kb1', 5), ('Na8', 7),
 
 Here is a bar graph of the frequency of all possible moves (tokens):
 
-![Dataset](visualisations\images\dataset.png)
+![Dataset](visualisations/images/dataset.png)
 
 It was expected that some moves would be over-represented as all games finish on the edge of the board and most of them specifically in one of the two white corners. However this looks quite extreme and I suspect it may make the model overfit to some moves
 
@@ -134,7 +134,7 @@ I trained for **190k iterations**.
 
 For the loss function I used the built-in cross entropy loss on the whole sequence. In retrospect I think I could have calculated the loss only on the white's move predictions, this way the model would not have wasted resources trying to learn how to predict the black's moves as well.
 
-![Training loss](visualisations\images\training-loss.png)
+![Training loss](visualisations/images/training-loss.png)
 
 After 160k batches I decreased the learning rate to 1e-5 and that seemed to improve the learning
 
@@ -155,7 +155,7 @@ The code I used for sampling is [here](https://github.com/VasilGeorgiev39/MechIn
 
 Let's start with a game that I played as black against the model. My strategy for the game was to try to capture the enemy's bishop. The model was successful at detecting when the bishop was in danger and moving it out and was ultimately able to reach a checkmate.
 
-![Board](visualisations\images\game.gif)
+![Board](visualisations/images/game.gif)
 
 [Link to game](https://lichess.org/study/ruqNokDo/nnb9HfBr)
 
@@ -167,7 +167,7 @@ Let's take a particular move for example and see what is going on. I generated t
 
 
 
-![Board](visualisations\images\example1_board.gif) 
+![Board](visualisations/images/example1_board.gif) 
 
 
 
@@ -191,25 +191,25 @@ Here are some particular examples:
 
 **Suppressing probabilities of squares that are attacked**
 
-![Log probs](visualisations\images\example2_1.png)
+![Log probs](visualisations/images/example2_1.png)
 
 Bishop at A6 suppresses the probabilities for the black king to move to B5 and C4
 
-![Log probs](visualisations\images\example2_3.png)
+![Log probs](visualisations/images/example2_3.png)
 
 Bishop at D4 suppresses the probabilities for the black king to move to A6 and B5
 
-![Log probs](visualisations\images\example2_4.png)
+![Log probs](visualisations/images/example2_4.png)
 
 Bishop at F7 suppresses the probabilities for the black king to move to D5 and C4
 
 
 **Bishop is attacked - probabilities of the other pieces are suppressed**
-![Log probs](visualisations\images\example3_1.png)
+![Log probs](visualisations/images/example3_1.png)
 Bishop on A6 is attacked by the king on B6 and the probabilities of all the other pieces seem suppressed
 
 **Interesting case when the bishop is attacked but the knight can defend it and the knight is suddenly activated**
-![Log probs](visualisations\images\example4_1.png)
+![Log probs](visualisations/images/example4_1.png)
 
 Bishop on D3 is attacked by the king on D4 but this time the knight is 'activated' as it can protect the Bishop with Nf2!
 
@@ -217,7 +217,7 @@ Bishop on D3 is attacked by the king on D4 but this time the knight is 'activate
 
 I wanted to understand more which parts of the model are the most important for its decisions. I decided to take an example of a position where there is clearly 1 good move (the position just before checkmate) and see what contributes to that move's probability.
 
-![Board](visualisations\images\example2_board.gif)
+![Board](visualisations/images/example2_board.gif)
 
 For this section I closely followed ARENA's [[1.3] Indirect_Object_Identification](https://arena-ch1-transformers.streamlit.app/[1.3]_Indirect_Object_Identification) tutorial
 
@@ -229,7 +229,7 @@ Then I calculated the residual directions for the correct and incorrect predicti
 ### Accumulated residual stream
 
 I used that on the accumulated residual stream to see how the model performs until each layer.
- ![Residual stream](visualisations\images\residual_stream.png)
+ ![Residual stream](visualisations/images/residual_stream.png)
 
 This seems off but I can't find my mistake :( Or I should have compared the 'best' move against multiple others?
 
@@ -237,7 +237,7 @@ This seems off but I can't find my mistake :( Or I should have compared the 'bes
 
 I also did the same but for each layer instead of the accumulated.
 
-![Layer logit diff](visualisations\images\layer_logit_diff.png)
+![Layer logit diff](visualisations/images/layer_logit_diff.png)
 
 MLP1 super positive and MLP2 super negative? I must have a mistake somewhere. Or is it just a case of transformers be transformin'?
 
@@ -245,7 +245,7 @@ MLP1 super positive and MLP2 super negative? I must have a mistake somewhere. Or
 
 I further broke down the output of each attention layer into the sum of the outputs of each attention head
 
-![Training loss](visualisations\images\heads_logit_diff.png)
+![Training loss](visualisations/images/heads_logit_diff.png)
 
 L1H2 is feeling quite negative
 
@@ -253,11 +253,11 @@ L1H2 is feeling quite negative
 
 Used the awesome circuitsvis to visualize the attention patterns
 
-![Attention patterns](visualisations\images\head-1-2.png)
+![Attention patterns](visualisations/images/head-1-2.png)
 The very negative L1H2 seems to activate on some particular moves for some reason. I couldn't see nothing special about those moves :(
 
-![Attention patterns](visualisations\images\head-2-2.png)
-![Attention patterns](visualisations\images\head-2-3.png)
+![Attention patterns](visualisations/images/head-2-2.png)
+![Attention patterns](visualisations/images/head-2-3.png)
 
 L2H2 and L3H3 look suspiciously like induction heads to me
 
@@ -269,11 +269,11 @@ I wanted to understand more how the model decides which moves are legal and whic
 
 I chose the following example:
 
-![Board](visualisations\images\example3_board.gif)
+![Board](visualisations/images/example3_board.gif)
 
 Here the last move from black was 'kb7' to which the model predicts 'Kb5'. I wanted to patch it so that black's last move was 'kb6' (which makes the following 'Kb5' illegal) and see which layers change the output significantly.
 
-![Patching](visualisations\images\patching.png)
+![Patching](visualisations/images/patching.png)
 
 Similar to the work on the Othello model the difference comes only from the MLP layers and nothing comes from the attention layers. Most of the work seems to happen in the second layer
 
