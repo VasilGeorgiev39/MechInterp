@@ -180,7 +180,7 @@ Next I generated the log probabilities for all positions in that game.
 
 You can find them [here](https://github.com/VasilGeorgiev39/MechInterp/tree/main/visualisations/game_log_probs)
 
-[https://github.com/VasilGeorgiev39/MechInterp/blob/main/Absent%20World%20Representations.html](The HTML version of this doc has a nice script that lets you browse the log probabilities for each move but it is very heavy to load)
+[The HTML version of this doc has a nice script that lets you browse the log probabilities for each move but it is very heavy to load](https://github.com/VasilGeorgiev39/MechInterp/blob/main/Absent%20World%20Representations.html)
 
 Few observations:
 
