@@ -1,6 +1,6 @@
 # Intro
 
-This is my application projects for the [MATS](https://www.matsprogram.org/) program
+This is my application project for the [MATS](https://www.matsprogram.org/) program
 
 The code is extremely ugly and hacky, please don't judge me for it lol. I have prioritized speed and making things working quickly over good software engineering.
 
